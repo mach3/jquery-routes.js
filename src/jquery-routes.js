@@ -87,14 +87,14 @@
         /**
          * Add rule
          *
-         * - .add(rule, feature); // Add a rule
-         * - .add({rule: feature, ...}); // Add rules by object
-         * - .add([{rule: rule, feature: feature}, ...]); // Add rules by array
+         * - .add(rule, action); // Add a rule
+         * - .add({rule: action, ...}); // Add rules by object
+         * - .add([{rule: rule, action: action}, ...]); // Add rules by array
          *
          * @param {String|Array|Object} rule|rules|rules
-         * @param {Function} feature
+         * @param {Function} action
          */
-        api.add = function(rule, feature){
+        api.add = function(rule, action){
             var my = this;
 
             switch($.type(rule)){
@@ -105,14 +105,14 @@
                     break;
                 case "array":
                     $.each(rule, function(i, item){
-                        my.add(item.rule, item.feature);
+                        my.add(item.rule, item.action);
                     });
                     break;
                 case "string":
                     this.rules.push({
                         rule: rule,
                         regex: new RegExp(rule),
-                        feature: feature
+                        action: action 
                     });
                     break;
                 default: break;
@@ -121,7 +121,7 @@
         };
 
         /**
-         * Resolve feature by rules
+         * Resolve action by rules
          * - path is optional, when omitted use location.pathname|hash by mode
          * @param {String} path
          */
@@ -141,8 +141,8 @@
                     if($.isFunction(options.hook)){
                         options.hook.apply(options.bind, args);
                     }
-                    if($.isFunction(item.feature)){
-                        item.feature.apply(options.bind, args);
+                    if($.isFunction(item.action)){
+                        item.action.apply(options.bind, args);
                     }
                     my.trigger(my.EVENT_SUCCESS, args);
                     resolved = true;

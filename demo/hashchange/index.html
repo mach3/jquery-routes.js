@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Demo: Hash Mode</title>
+    <style>
+    #result {
+        list-style-type: none;
+        background-color: #eee;
+        padding: 1em;
+    }
+    </style>
+</head>
+<body>
+
+    <h1>Demo: Hash Mode</h1>
+
+    <ul>
+        <li><a href="#/foo">/foo</a></li>
+        <li><a href="#/bar/123">/bar/123</a></li>
+        <li><a href="#/baz/123/456">/baz/123/456</a></li>
+        <li><a href="#/unknown">/unknown</a></li>
+    </ul>
+
+    <ul id="result">
+    </ul>
+
+    <script src="/bower_components/jquery/dist/jquery.js"></script>
+    <script src="/src/jquery-routes.js"></script>
+
+    <script>
+    (function(){
+
+        var r = new $.Routes({mode: "hash"});
+
+        var result = function(e){
+            var args = [].slice.call(arguments, 1);
+            $("<li>").text(e.type + ": " + args.join(" , "))
+            .prependTo("#result");
+        };
+
+        r.on({
+            error: result,
+            success: result
+        });
+
+        r.add({
+            "^/foo": null,
+            "^/bar/(\\w+)": null,
+            "^/baz/(\\w+)/(\\w+)": null
+        });
+
+        r.watch().resolve();
+
+    }());
+    </script>
+
+</body>
+</html>

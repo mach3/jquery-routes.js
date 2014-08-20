@@ -31,26 +31,26 @@
     <script>
     (function(){
 
-        var r = new $.Routes({mode: "path"});
-
         var result = function(e){
             var args = [].slice.call(arguments, 1);
             $("<li>").text(e.type + ": " + args.join(" , "))
             .prependTo("#result");
         };
 
-        r.on({
+        var r = new $.Routes({mode: "path"})
+        .on({
             error: result,
-            success: result
-        });
-
-        r.add({
+            success: result,
+            resolved: function(){
+                console.log(arguments);
+            }
+        })
+        .add({
             "^/demo/path/foo": null,
             "^/demo/path/bar/(\\w+)": null,
             "^/demo/path/baz/(\\w+)/(\\w+)": null
-        });
-
-        r.resolve();
+        })
+        .resolve();
 
     }());
     </script>

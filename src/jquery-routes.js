@@ -17,6 +17,7 @@
          */
         api.EVENT_ERROR = "error";
         api.EVENT_SUCCESS = "success";
+        api.EVENT_RESOLVED = "resolved";
 
         /**
          * Defaults for options:
@@ -57,7 +58,10 @@
             }
 
             $.each(["on", "off", "trigger"], function(i, name){
-                my[name] = $.proxy(my.emitter[name], my.emitter);
+                my[name] = function(){
+                    this.emitter[name].apply(this.emitter, arguments);
+                    return this;
+                };
             });
         };
 
@@ -128,7 +132,8 @@
         api.resolve = function(path){
             var my = this,
                 resolved = false,
-                options = this.config();
+                options = this.config(),
+                paths = [];
 
             path = $.type(path) === "string" ? path
             : options.mode === "hash" ? location.hash.replace(/^#/, "")
@@ -146,6 +151,7 @@
                     }
                     my.trigger(my.EVENT_SUCCESS, args);
                     resolved = true;
+                    paths = args;
                     return false;
                 }
             });
@@ -153,6 +159,8 @@
             if(! resolved){
                 this.trigger(this.EVENT_ERROR, path);
             }
+
+            this.trigger(this.EVENT_RESOLVED, [resolved].concat(paths));
 
             return resolved;
         };

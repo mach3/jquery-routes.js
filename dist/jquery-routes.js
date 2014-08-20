@@ -3,7 +3,7 @@
  * -------------
  * Router library for jQuery
  *
- * @version 0.1.0 (2014-08-21 00:37:22)
+ * @version 0.1.1 (2014-08-21 00:38:26)
  * @author mach3 <http://github.com/mach3>
  * @license MIT
  * @require jQuery

@@ -1,6 +1,6 @@
 {
   "name": "jquery-routes.js",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Router library for jQuery",
   "main": "dist/jquery-routes.js",
   "scripts": {

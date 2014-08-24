@@ -115,6 +115,7 @@
                 case "string":
                     this.rules.push({
                         rule: rule,
+                        // regex: u.parseRegExp(rule),
                         regex: new RegExp(rule),
                         action: action 
                     });
@@ -130,39 +131,64 @@
          * @param {String} path
          */
         api.resolve = function(path){
+            var vars, o;
+
+            vars = this.parse(path);
+            o = this.config();
+
+            if(vars.success){
+                if($.isFunction(o.hook)){
+                    o.hook.apply(o.bind, vars.args);
+                }
+                if($.isFunction(vars.rule.action)){
+                    vars.rule.action.apply(o.bind, vars.args);
+                }
+                this.trigger(this.EVENT_SUCCESS, vars.args);
+            } else {
+                this.trigger(this.EVENT_ERROR, vars.path);
+            }
+
+            this.trigger(this.EVENT_RESOLVED, [vars.success].concat(vars.args));
+
+            return this;
+        };
+
+        /**
+         * Try to parse path by rules
+         * 
+         * Returns object which consists of results
+         * - {Boolean} success ... Succeeded to parse or not
+         * - {String} path ... Path to be parsed
+         * - {Object} rule ... Rule which succeeded to pase
+         * - {Array} args ... Arguments to be passed to callback or event listener
+         * 
+         * @param {String} path
+         */
+        api.parse = function(path){
             var my = this,
-                resolved = false,
                 options = this.config(),
-                paths = [];
+                rule = null,
+                args = [];
 
             path = $.type(path) === "string" ? path
             : options.mode === "hash" ? location.hash.replace(/^#/, "")
             : location.pathname;
 
             $.each(this.rules, function(i, item){
-                var args, m = path.match(item.regex);
+                var m = path.match(item.regex);
                 if(!! m){
                     args = u.toArray(m);
-                    if($.isFunction(options.hook)){
-                        options.hook.apply(options.bind, args);
-                    }
-                    if($.isFunction(item.action)){
-                        item.action.apply(options.bind, args);
-                    }
-                    my.trigger(my.EVENT_SUCCESS, args);
-                    resolved = true;
-                    paths = args;
+                    rule = item;
                     return false;
                 }
             });
 
-            if(! resolved){
-                this.trigger(this.EVENT_ERROR, path);
-            }
-
-            this.trigger(this.EVENT_RESOLVED, [resolved].concat(paths));
-
-            return resolved;
+            return {
+                success: !! args.length,
+                path: path,
+                rule: rule,
+                args: args
+            };
         };
 
         /**

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Demo: Parse Method</title>
+</head>
+<body>
+
+	<h1>Demo: Parse Method</h1>
+
+	<ul class="test">
+		<li><a href="#/foo">#/foo</a></li>
+		<li><a href="#/bar/123">#/bar/123</a></li>
+		<li><a href="#/baz/123/test">#/baz/123/test</a></li>
+		<li><a href="#/unknown">#/unknown</a></li>
+	</ul>
+
+	<pre id="log"></pre>
+
+	<script src="../../bower_components/jquery/dist/jquery.js"></script>
+	<script src="../../src/jquery-routes.js"></script>
+
+	<script>
+	(function(){
+
+		var r = new $.Routes();
+		r.config({mode: "hash"})
+		.add({
+			"^/foo": null,
+			"^/bar/(\\w+)": null,
+			"^/baz/(\\d+?)/(\\w+)": null
+		});
+
+		$(".test a").on("click", function(e){
+			e.preventDefault();
+			var res = r.parse($(e.currentTarget).attr("href").replace(/^#/, ""));
+			$("#log").prepend(JSON.stringify(res) + "\n");
+		});
+
+	}());
+	</script>
+
+</body>
+</html>
